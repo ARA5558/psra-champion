@@ -1,18 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  signInAnonymously, 
-  onAuthStateChanged 
-} from 'firebase/auth';
-import { 
-  getFirestore, 
-  doc, 
-  setDoc, 
-  onSnapshot, 
-  collection, 
-  addDoc 
-} from 'firebase/firestore';
+import React, { useState, useMemo, useRef } from 'react';
 
 function IconBookOpen({ className = "w-4 h-4" }) {
   return (
@@ -118,14 +104,6 @@ function IconFolderPlus({ className = "w-4 h-4" }) {
   );
 }
 
-function IconFilter({ className = "w-4 h-4" }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-    </svg>
-  );
-}
-
 function IconShieldCheck({ className = "w-4 h-4" }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,49 +111,6 @@ function IconShieldCheck({ className = "w-4 h-4" }) {
     </svg>
   );
 }
-
-function IconAlertTriangle({ className = "w-4 h-4" }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>
-  );
-}
-
-function IconUser({ className = "w-4 h-4" }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-    </svg>
-  );
-}
-
-function IconUserPlus({ className = "w-4 h-4" }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" x2="20" y1="8" y2="14"/><line x1="23" x2="17" y1="11" y2="11"/>
-    </svg>
-  );
-}
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAF1g25kWTDpFv9_yxHn7L7ql5RX8v3BQo",
-  authDomain: "psra-mumtaz.firebaseapp.com",
-  projectId: "psra-mumtaz",
-  storageBucket: "psra-mumtaz.firebasestorage.app",
-  messagingSenderId: "848542009537",
-  appId: "1:848542009537:web:d37f5bc650ca18946cac40"
-};
-
-let app, auth, db;
-try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-} catch (e) {
-  console.warn("Firebase fallback mode:", e);
-}
-const appId = 'psra-mumtaz';
 
 const generateComprehensivePsraBank = () => {
   const bank = [];
@@ -188,8 +123,7 @@ const generateComprehensivePsraBank = () => {
     { key: 'sirah', title: 'Sirah & Akhlak' }
   ];
 
-  // Specific high-frequency authentic items for each subject
-  const authenticSubjectTemplates = {
+  const authenticTemplates = {
     tajweed: [
       {
         qJ: "أڤاكه حكم تجويد باݢي نون ساكنة (نْ) يڠ برتمو دڠن حروف 'ر' أتاو 'ل'؟",
@@ -208,51 +142,19 @@ const generateComprehensivePsraBank = () => {
         correctIdx: 0
       },
       {
-        qJ: "كادر ڤنجڠ باچاءن باݢي حكم 'مد واجب متصل' اياله:",
-        qR: "Kadar panjang bacaan bagi hukum 'Mad Wajib Muttasil' ialah:",
+        qJ: "كادر ڤنجڠ باچاءن باݢي حكم 'مد واجب متصل' كتيك وصل اياله:",
+        qR: "Kadar panjang bacaan bagi hukum 'Mad Wajib Muttasil' ketika wasal ialah:",
         aJ: "4 أتاو 5 حركة", aR: "4 atau 5 harakat",
         exp: "Mad Wajib Muttasil dibaca 4 atau 5 harakat ketika wasal, dan harus dibaca 4, 5 atau 6 harakat ketika waqaf.",
         opts: ["4 أتاو 5 حركة", "2 حركة سهاج", "6 حركة واجب", "3 حركة"],
         correctIdx: 0
       },
       {
-        qJ: "براڤاكه بيلاڠن حروف باݢي حكم إظهار حلقي؟",
-        qR: "Berapakah bilangan huruf bagi hukum Izhar Halqi?",
-        aJ: "6 حروف (ء ، هـ ، ع ، غ ، ح ، خ)", aR: "6 Huruf (Hamzah, Ha, 'Ain, Ghain, Ha, Kha)",
-        exp: "Huruf Izhar Halqi ada 6 yang keluar daripada makhraj halkum.",
-        opts: ["6 حروف", "4 حروف", "15 حروف", "2 حروف"],
-        correctIdx: 0
-      },
-      {
-        qJ: "حكم إقلاب برلاكو اڤابيلا نون ساكنة أتاو تنوين برتمو دڠن حروف:",
-        qR: "Hukum Iqlab berlaku apabila Nun Sakinah atau Tanwin bertemu huruf:",
-        aJ: "ب (Ba)", aR: "Huruf Ba",
-        exp: "Iqlab hanya mempunyai 1 huruf iaitu Ba, ditukar sebutan kepada bunyi Mim.",
-        opts: ["ب (Ba)", "م (Mim)", "ن (Nun)", "و (Wau)"],
-        correctIdx: 0
-      },
-      {
-        qJ: "قلقلة صغرى برلاكو اڤابيلا حروف قلقلة برباريس ماتي د:",
-        qR: "Qalqalah Sughra berlaku apabila huruf Qalqalah berbaris mati di:",
-        aJ: "تڠه-تڠه كلمة (ماتي اصلي)", aR: "Pertengahan kalimah secara asli",
-        exp: "Lantunan kecil berlaku apabila huruf qalqalah mati asal di tengah kalimah.",
-        opts: ["تڠه-تڠه كلمة", "أخير كلمة كران وقف", "أول كلمة", "أتس شدة"],
-        correctIdx: 0
-      },
-      {
-        qJ: "حكم باچاءن مد لازم كلمي مثقل واجب دڤنجڠكن سباڽق:",
-        qR: "Kadar bacaan Mad Lazim Kilmi Muthaqqal wajib dipanjangkan sebanyak:",
-        aJ: "6 حركة واجب", aR: "6 Harakat Wajib",
-        exp: "Mad Lazim Kilmi Muthaqqal wajib dibaca panjang 6 harakat berturut-turut.",
-        opts: ["6 حركة واجب", "4 حركة", "2 حركة", "5 حركة"],
-        correctIdx: 0
-      },
-      {
-        qJ: "اڤاكه مقصود إدغام مع الغنة؟",
-        qR: "Apakah maksud hukum Idgham Ma'al Ghunnah?",
-        aJ: "مماسوقكن بوڽي برسرتا دڠوڠ 2 حركة", aR: "Memasukkan bunyi berserta dengung 2 harakat",
-        exp: "Idgham Ma'al Ghunnah berlaku pada 4 huruf (ي ن م و).",
-        opts: ["مماسوقكن بوڽي برسرتا دڠوڠ", "مڽاتكن بوڽي تنڤا دڠوڠ", "منوكر كڤد ميم", "ممبوڽيكن ترڤوسوست"],
+        qJ: "حكم نون ماتي دالم كلمة 'الدُّنْيَا' اداله دباچ سچارا:",
+        qR: "Hukum nun mati dalam perkataan 'Ad-Dunya' (الدُّنْيَا) dibaca secara:",
+        aJ: "إظهار مطلق", aR: "Izhar Mutlaq",
+        exp: "Izhar Mutlaq berlaku apabila Nun mati bertemu Wau atau Ya dalam satu kalimah yang sama.",
+        opts: ["إظهار مطلق", "إدغام مع ڠنة", "إخفاء حقيقي", "إقلاب"],
         correctIdx: 0
       }
     ],
@@ -261,7 +163,7 @@ const generateComprehensivePsraBank = () => {
         qJ: "ايجاءن جاوي يڠ بتول باݢي كات ڤينجمن إيڠݢريس 'Teknologi' اياله:",
         qR: "Ejaan Jawi yang betul bagi kata pinjaman Inggeris 'Teknologi':",
         aJ: "تيكنولوجي", aR: "Teknologi (تيكنولوجي)",
-        exp: "Kata serapan Inggeris dieja mengikut padanan fonetik suku kata.",
+        exp: "Kata serapan Inggeris dieja mengikut padanan fonetik suku kata DBP.",
         opts: ["تيكنولوجي", "تكنلوݢي", "تيكنالوݢي", "تيقنولوجي"],
         correctIdx: 0
       },
@@ -274,35 +176,11 @@ const generateComprehensivePsraBank = () => {
         correctIdx: 0
       },
       {
-        qJ: "ايجاءن جاوي يڠ بتول باݢي كات برايمبوهن 'Mengambil':",
-        qR: "Ejaan Jawi yang betul bagi kata berimbuhan 'Mengambil':",
-        aJ: "مڠامبيل", aR: "Mengambil (مڠامبيل)",
-        exp: "Imbuhan awalan 'meng-' yang bertemu kata dasar bermula Alif mengekalkan Alif.",
-        opts: ["مڠامبيل", "مڠمبيل", "مڠامبل", "ماڠامبيل"],
-        correctIdx: 0
-      },
-      {
-        qJ: "كدودوقن همزة دباوه الف (إ) دݢوناكن اونتوق كلمه سرڤن عرب:",
-        qR: "Kedudukan Hamzah di bawah Alif (إ) digunakan untuk kata serapan Arab:",
-        aJ: "إسلام / إخلاص", aR: "Islam / Ikhlas",
-        exp: "Kata serapan Arab bermula kasrah mengekalkan rasm asal dengan Hamzah di bawah Alif.",
-        opts: ["إسلام", "أوتوسن", "ايتيك", "اوستاد"],
-        correctIdx: 0
-      },
-      {
-        qJ: "سني خط يڠ برصفة ريڠكس، لوروس دان موده دتوليس چڤت اياله:",
-        qR: "Seni khat yang ringkas, lurus dan pantas ditulis ialah:",
-        aJ: "خط الرقعة", aR: "Khat Riq'ah",
-        exp: "Khat Riq'ah dicipta khas untuk penulisan urusan harian yang cekap dan pantas.",
-        opts: ["خط الرقعة", "خط النسخ", "خط الثلث", "خط الكوفي"],
-        correctIdx: 0
-      },
-      {
-        qJ: "ايجاءن باݢي كات ماجموق منتڤ 'تڠݢوڠجواب' دتوليس سچارا:",
-        qR: "Ejaan bagi kata majmuk mantap 'Tanggungjawab' ditulis secara:",
-        aJ: "برسامبوڠ سڤنوهڽ (تڠݢوڠجواب)", aR: "Bersambung sepenuhnya",
-        exp: "Kata majmuk mantap dieja bersambung mengikut pedoman DBP dan JAIS.",
-        opts: ["تڠݢوڠجواب", "تڠݢوڠ جواب", "تڠ ݢوڠ جواب", "تڠݢڠ جواب"],
+        qJ: "ايجاءن جاوي يڠ بتول باݢي كات ماجموق منتڤ 'كرجاسام' اياله:",
+        qR: "Ejaan Jawi bagi kata majmuk mantap 'Kerjasama' ialah:",
+        aJ: "كرجاسام (برسامبوڠ)", aR: "Kerjasama (bersambung)",
+        exp: "Kata majmuk mantap dieja bersambung sepenuhnya tanpa ruang pemisah.",
+        opts: ["كرجاسام", "كرجا سام", "كيرجاساما", "كرج سام"],
         correctIdx: 0
       }
     ],
@@ -316,43 +194,11 @@ const generateComprehensivePsraBank = () => {
         correctIdx: 0
       },
       {
-        qJ: "ترجمهكن كلمة 'طَبِيبٌ' كبهاس ملايو:",
-        qR: "Terjemahkan kalimah 'طَبِيبٌ' (Thabibun) ke Bahasa Melayu:",
-        aJ: "دوكتور ليلاكي", aR: "Doktor Lelaki",
-        exp: "Thabibun bermaksud doktor lelaki, manakala Thabibatun ialah doktor perempuan.",
-        opts: ["دوكتور ليلاكي", "ݢورو ليلاكي", "ڤوليس", "جوروتربڠ"],
-        correctIdx: 0
-      },
-      {
-        qJ: "الجمع (Kata Jamak / Ramai) باݢي كلمة 'كِتَابٌ' اياله:",
-        qR: "Bentuk Jamak (banyak) bagi perkataan 'كِتَابٌ' (Kitab) ialah:",
-        aJ: "كُتُبٌ", aR: "Kutubun (كُتُبٌ)",
-        exp: "Jamak Taksir bagi Kitabun ialah Kutubun (buku-buku).",
-        opts: ["كُتُبٌ", "كِتَابَانِ", "كِتَابَاتٌ", "كَاتِبٌ"],
-        correctIdx: 0
-      },
-      {
-        qJ: "لاون (Kata Lawan) باݢي كلمة 'كَبِيرٌ' (Besar) اياله:",
-        qR: "Kata lawan bagi perkataan 'كَبِيرٌ' (Kabirun - Besar) ialah:",
-        aJ: "صَغِيرٌ (Saghirun)", aR: "Saghirun (Kecil)",
-        exp: "Kabirun bermaksud besar, lawannya ialah Saghirun yang bermaksud kecil.",
-        opts: ["صَغِيرٌ", "طَوِيلٌ", "قَصِيرٌ", "جَدِيدٌ"],
-        correctIdx: 0
-      },
-      {
-        qJ: "العدد (Nombor) 'خَمْسَةٌ وَعِشْرُونَ' برمقصود اڠك:",
-        qR: "Nombor 'خَمْسَةٌ وَعِشْرُونَ' bermaksud angka:",
-        aJ: "25", aR: "25 (Dua puluh lima)",
-        exp: "Khamsatun (5) dan 'Isyrun (20) menghasilkan angka 25.",
-        opts: ["25", "15", "52", "35"],
-        correctIdx: 0
-      },
-      {
-        qJ: "الفعل المضارع باݢي 'هُوَ' (Dia sedang menulis):",
-        qR: "Fi'il Mudhari' bagi kata 'Dia sedang menulis' (Kataba):",
-        aJ: "يَكْتُبُ", aR: "Yaktubu",
-        exp: "Fi'il Mudhari' bagi dhomir Huwa dimulai dengan huruf mudhara'ah Ya.",
-        opts: ["يَكْتُبُ", "تَكْتُبُ", "كَتَبَ", "أَكْتُبُ"],
+        qJ: "الفِعْلُ المَاضِي باݢي ضمير 'أَنَا' (Saya telah membaca) اياله:",
+        qR: "Fi'il Madhi bagi dhomir 'Ana' (Saya telah membaca):",
+        aJ: "قَرَأْتُ", aR: "Qara'tu",
+        exp: "Fi'il Madhi bagi dhomir Ana diakhiri huruf Ta berbaris dhommah (قَرَأْتُ).",
+        opts: ["قَرَأْتُ", "قَرَأْنَا", "يَقْرَأُ", "قَرَأَ"],
         correctIdx: 0
       }
     ],
@@ -366,35 +212,11 @@ const generateComprehensivePsraBank = () => {
         correctIdx: 0
       },
       {
-        qJ: "ڤركارا 'سمعيات' (Sam'iyyat) برمقصود ڤركارا يڠ دكتاهوءي ملالوءي:",
-        qR: "Perkara 'Sam'iyyat' bermaksud perkara yang hanya diketahui melalui:",
-        aJ: "دليل نقلي (Al-Quran & Hadis)", aR: "Dalil Naqli (Al-Quran & Hadis)",
-        exp: "Sam'iyyat seperti alam kubur, mahsyar, dan titian sirat hanya diketahui melalui wahyu.",
-        opts: ["دليل نقلي (Al-Quran & Hadis)", "دليهت دڠن مات كڤالا", "دفيكيركن اوليه عقل سهاج", "درأساكن دڠن ڤنچاءيندرا"],
-        correctIdx: 0
-      },
-      {
-        qJ: "أڤاكه حكم برايمان دڠن هاري قيامة (Hari Akhirat)؟",
-        qR: "Apakah hukum beriman dengan Hari Kiamat?",
-        aJ: "فرض عين (Wajib atas setiap orang)", aR: "Fardhu 'Ain (Wajib)",
-        exp: "Beriman kepada Hari Kiamat ialah Rukun Iman yang ke-5 dan wajib atas setiap mukallaf.",
-        opts: ["فرض عين", "فرض كفاية", "سنة", "هاروس"],
-        correctIdx: 0
-      },
-      {
-        qJ: "صفت مستحيل باݢي الله 'الـمَوْتُ' (Al-Maut) برمقصود:",
-        qR: "Maksud sifat Mustahil bagi Allah 'Al-Maut' ialah:",
-        aJ: "ماتي / بيناسا", aR: "Mati / Binasa",
-        exp: "Mustahil Allah mati kerana Allah bersifat Hayat (Maha Hidup kekal abadi).",
-        opts: ["ماتي", "بوده", "تولي", "لمه"],
-        correctIdx: 0
-      },
-      {
-        qJ: "تيمبڠن عملن باءيق دان بوروق ماءنسي دأخيرت دناماكن:",
-        qR: "Timbangan amalan manusia di akhirat dinamakan:",
-        aJ: "الميزان (Al-Mizan)", aR: "Al-Mizan",
-        exp: "Al-Mizan ialah neraca timbangan keadilan Allah pada Hari Kiamat.",
-        opts: ["الميزان", "الصراط", "المحشر", "البرزخ"],
+        qJ: "حكوم برايمان دڠن ڤركارا سمعيات (Sam'iyyat) سڤرتي سياست قبور اياله:",
+        qR: "Hukum beriman dengan perkara Sam'iyyat seperti alam kubur ialah:",
+        aJ: "فرض عين (Wajib)", aR: "Fardhu 'Ain (Wajib)",
+        exp: "Perkara Sam'iyyat diketahui bersumberkan Al-Quran dan Hadis sahih, wajib diyakini sepenuhnya.",
+        opts: ["فرض عين", "فرض كفاية", "سنة مؤكدة", "هاروس"],
         correctIdx: 0
       }
     ],
@@ -403,40 +225,16 @@ const generateComprehensivePsraBank = () => {
         qJ: "حكوم مموتوڠ كوكو دان مراڤيكن رمبوت ڤد هاري جمعة اياله:",
         qR: "Hukum memotong kuku dan merapikan rambut pada hari Jumaat ialah:",
         aJ: "سنة (Sunat)", aR: "Sunat yang sangat digalakkan",
-        exp: "Membersihkan diri seperti memotong kuku pada hari Jumaat adalah sunat mengikut sunnah Nabi SAW.",
+        exp: "Membersihkan diri pada hari Jumaat adalah amalan sunat mengikut sunnah Nabi SAW.",
         opts: ["سنة", "واجب", "هاروس", "مكروه"],
         correctIdx: 0
       },
       {
-        qJ: "نجيس مغلظة مستيله دسوچيكن سباڽق 7 كالي دان ساتو درڤداڽ دڠن:",
-        qR: "Najis Mughallazah mestilah dibasuh sebanyak 7 kali dan salah satunya dengan:",
-        aJ: "اءير تانه سوچي", aR: "Air bercampur tanah yang suci",
-        exp: "Menyucikan najis berat seperti anjing dan babi wajib menggunakan 1 basuhan air tanah.",
-        opts: ["اءير تانه سوچي", "اءير سابون", "اءير ماور", "اءير ݢارم"],
-        correctIdx: 0
-      },
-      {
-        qJ: "أڤاكه حكم منونايكن 'صلاة عيد الفطر' باݢي اومت اسلام؟",
-        qR: "Apakah hukum menunaikan Solat Hari Raya Aidilfitri?",
-        aJ: "سنة مؤكدة", aR: "Sunat Muakkad",
-        exp: "Solat sunat Hari Raya hukumnya Sunat Muakkad yang sangat dituntut berjemaah.",
-        opts: ["سنة مؤكدة", "فرض عين", "فرض كفاية", "هاروس"],
-        correctIdx: 0
-      },
-      {
-        qJ: "براڤاكه بيلاڠن روكون صلاة يڠ واجب دلقساناكن؟",
-        qR: "Berapakah bilangan rukun solat yang wajib dilaksanakan?",
-        aJ: "13 روكون", aR: "13 Rukun",
-        exp: "Rukun solat terbahagi kepada 13 perkara (Qawli, Fi'li, dan Qalbi).",
-        opts: ["13 روكون", "10 روكون", "15 روكون", "8 روكون"],
-        correctIdx: 0
-      },
-      {
-        qJ: "أڤاكه حكم مڠلواركن زكاة فطر باݢي ستياڤ اينديۏيدو مسلم؟",
-        qR: "Apakah hukum mengeluarkan Zakat Fitrah bagi setiap Muslim?",
-        aJ: "فرض عين", aR: "Fardhu 'Ain",
-        exp: "Zakat fitrah wajib dibayar sebelum solat sunat Hari Raya Aidilfitri.",
-        opts: ["فرض عين", "فرض كفاية", "سنة", "هاروس"],
+        qJ: "كادر زكاة واڠ سيمڤنن دان ڤرنياݢاءن يڠ واجب دكلواركن اياله:",
+        qR: "Kadar zakat wang simpanan dan perniagaan yang wajib dikeluarkan ialah:",
+        aJ: "2.5% (دوا ستڠه ڤراتوس)", aR: "2.5 peratus",
+        exp: "Kadar zakat wang simpanan yang cukup haul dan nisab ialah 2.5 peratus.",
+        opts: ["2.5%", "5%", "10%", "20%"],
         correctIdx: 0
       }
     ],
@@ -450,43 +248,18 @@ const generateComprehensivePsraBank = () => {
         correctIdx: 0
       },
       {
-        qJ: "ڤريستيوا 'فَتْحُ مَكَّةَ' (Pembukaan Kota Mekah) برلاكو ڤد تاهون ك-:",
-        qR: "Peristiwa 'Fathu Makkah' berlaku pada tahun ke-:",
+        qJ: "ڤمبوكاءن كوتا مكة (فَتْحُ مَكَّةَ) برلاكو ڤد تاهون ك-:",
+        qR: "Pembukaan Kota Mekah (Fathu Makkah) berlaku pada tahun ke-:",
         aJ: "8 هجرة", aR: "8 Hijrah",
-        exp: "Fathu Makkah berlaku pada 20 Ramadan tahun ke-8 Hijrah tanpa pertumpahan darah.",
+        exp: "Fathu Makkah berlaku pada Ramadan tahun ke-8 Hijrah tanpa sebarang pertumpahan darah.",
         opts: ["8 هجرة", "6 هجرة", "10 هجرة", "2 هجرة"],
-        correctIdx: 0
-      },
-      {
-        qJ: "ڤراڠ 'بَدْرٍ الـكُبْرَى' برلاكو ڤد 17 بولن رمضان دالم تاهون ك-:",
-        qR: "Perang Badar Al-Kubra berlaku pada 17 Ramadan dalam tahun ke-:",
-        aJ: "2 هجرة", aR: "2 Hijrah",
-        exp: "Perang Badar meletus pada 17 Ramadan tahun ke-2 Hijrah dan tentera Islam menang.",
-        opts: ["2 هجرة", "3 هجرة", "5 هجرة", "8 هجرة"],
-        correctIdx: 0
-      },
-      {
-        qJ: "صفت محمودة (Mahmudah) برمقصود صفت يڠ:",
-        qR: "Sifat Mahmudah bermaksud sifat yang:",
-        aJ: "ترڤوجي دان دسوكاءي الله", aR: "Terpuji dan disukai Allah",
-        exp: "Sifat Mahmudah ialah akhlak terpuji seperti amanah, jujur, sabar, dan bersyukur.",
-        opts: ["ترڤوجي دان دسوكاءي الله", "ترچلا دان دبنچي الله", "سومبوڠ دان رياء", "دڠكي دان حسد"],
-        correctIdx: 0
-      },
-      {
-        qJ: "خلفاء الراشدين يڠ ك-4 دان مننتو كڤد رسول الله ialah:",
-        qR: "Khalifah Ar-Rasyidin yang ke-4 dan menantu Rasulullah SAW ialah:",
-        aJ: "سيدنا علي بن أبي طالب", aR: "Saidina Ali bin Abi Thalib (K.W)",
-        exp: "Urutan Khulafa' Ar-Rasyidin: Abu Bakar, Umar, Uthman, dan Ali bin Abi Thalib.",
-        opts: ["سيدنا علي بن أبي طالب", "سيدنا عمر بن الخطاب", "سيدنا عثمان بن عفان", "سيدنا أبو بكر"],
         correctIdx: 0
       }
     ]
   };
 
-  // Generate 55+ questions per subject across different mode flags to total >330 questions
   subjects.forEach(sub => {
-    const templates = authenticSubjectTemplates[sub.key] || [];
+    const templates = authenticTemplates[sub.key] || [];
     const modes = ['mcq', 'exam', 'note', 'matching'];
 
     for (let i = 1; i <= 55; i++) {
@@ -494,7 +267,7 @@ const generateComprehensivePsraBank = () => {
       const assignedMode = modes[(i - 1) % modes.length];
       const standardNum = (i % 2 === 0) ? 6 : 5;
 
-      const questionObj = {
+      bank.push({
         id: `gen_${sub.key}_${i}`,
         subject: sub.key,
         subjectKey: sub.key,
@@ -510,16 +283,14 @@ const generateComprehensivePsraBank = () => {
           rumi: optText,
           correct: oIdx === tmpl.correctIdx
         }))
-      };
-
-      bank.push(questionObj);
+      });
     }
   });
 
   return bank;
 };
 
-const massiveDefaultQuestions = generateComprehensivePsraBank();
+const defaultQuestionBank = generateComprehensivePsraBank();
 
 const defaultMatchingPool = [
   { id: 1, subject: "tajweed", jawi: "إدغام مع ڠنة", rumi: "Dengung 2 harakat (ي ن م و)" },
@@ -542,16 +313,13 @@ const defaultMatchingPool = [
 ];
 
 export default function App() {
-  const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('topics');
   const [parentModeRumi, setParentModeRumi] = useState(true);
-  const [cloudQuestions, setCloudQuestions] = useState([]);
 
   const initialAnalyticsTemplate = {
     totalAnswered: 0,
     totalCorrect: 0,
     examsTaken: 0,
-    streakDays: 0,
     subjectBreakdown: {
       tajweed: { answered: 0, correct: 0 },
       imlak: { answered: 0, correct: 0 },
@@ -580,9 +348,6 @@ export default function App() {
   ]);
   const [activeProfileId, setActiveProfileId] = useState('prof_1');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showAddProfileModal, setShowAddProfileModal] = useState(false);
-  const [newProfileName, setNewProfileName] = useState('');
-  const [newProfileRole, setNewProfileRole] = useState('student');
 
   const currentProfile = useMemo(() => {
     return profiles.find(p => p.id === activeProfileId) || profiles[0];
@@ -597,17 +362,14 @@ export default function App() {
     }));
   };
 
-  // Subject and Standard Filters
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [selectedStandard, setSelectedStandard] = useState('all');
 
-  // Quiz States
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizScore, setQuizScore] = useState(0);
   const [quizSelectedOption, setQuizSelectedOption] = useState(null);
   const [quizAnswered, setQuizAnswered] = useState(false);
 
-  // Exam Simulation States
   const [examActive, setExamActive] = useState(false);
   const [examSubmitted, setExamSubmitted] = useState(false);
   const [examQuestions, setExamQuestions] = useState([]);
@@ -616,20 +378,17 @@ export default function App() {
   const [examTimeLeft, setExamTimeLeft] = useState(900);
   const examTimerRef = useRef(null);
 
-  // Flashcards States
   const [cardIndex, setCardIndex] = useState(0);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
 
-  // Matching Game States
   const [matchingSetIndex, setMatchingSetIndex] = useState(0);
   const [selectedJawi, setSelectedJawi] = useState(null);
   const [selectedRumi, setSelectedRumi] = useState(null);
   const [matchedIds, setMatchedIds] = useState([]);
 
-  // Toast & Bulk Import States
   const [toastMsg, setToastMsg] = useState(null);
   const [bulkJsonText, setBulkJsonText] = useState('');
-  const [duplicateFilterMode, setDuplicateFilterMode] = useState('skip'); // 'skip' | 'overwrite'
+  const [customBank, setCustomBank] = useState([]);
   const [scanResult, setScanResult] = useState(null);
 
   const showToast = (message) => {
@@ -639,9 +398,9 @@ export default function App() {
 
   const playSound = (kind = 'correct') => {
     try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-      const ctx = new AudioContextClass();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
@@ -662,7 +421,7 @@ export default function App() {
         osc.start();
         osc.stop(ctx.currentTime + 0.3);
       }
-    } catch (e) {}
+    } catch {}
   };
 
   const speakArabic = (text) => {
@@ -670,44 +429,17 @@ export default function App() {
       try {
         window.speechSynthesis.cancel();
         const clean = text.replace(/\[Set #\d+\]/g, '');
-        const utterance = new SpeechSynthesisUtterance(clean);
-        utterance.lang = 'ar-SA';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-      } catch (e) {}
+        const utt = new SpeechSynthesisUtterance(clean);
+        utt.lang = 'ar-SA';
+        utt.rate = 0.85;
+        window.speechSynthesis.speak(utt);
+      } catch {}
     }
   };
 
-  useEffect(() => {
-    if (!auth || !db) return;
-    const initAuth = async () => {
-      try {
-        await signInAnonymously(auth);
-      } catch (e) {
-        console.warn("Auth offline mode:", e);
-      }
-    };
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        try {
-          const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'psra_questions');
-          const unsubQuestions = onSnapshot(colRef, (snapshot) => {
-            const list = [];
-            snapshot.forEach((d) => list.push({ id: d.id, ...d.data() }));
-            if (list.length > 0) setCloudQuestions(list);
-          }, (err) => console.warn(err));
-          return () => unsubQuestions();
-        } catch (e) {}
-      }
-    });
-    initAuth();
-    return () => unsub();
-  }, []);
-
   const allQuestions = useMemo(() => {
-    return [...massiveDefaultQuestions, ...cloudQuestions];
-  }, [cloudQuestions]);
+    return [...defaultQuestionBank, ...customBank];
+  }, [customBank]);
 
   const filteredQuestions = useMemo(() => {
     return allQuestions.filter((q) => {
@@ -717,6 +449,7 @@ export default function App() {
     });
   }, [allQuestions, selectedSubject, selectedStandard]);
 
+  // Robust Normalizer: Works with string arrays, objects, or key values
   const normalizeOption = (opt) => {
     if (!opt) return { jawi: '-', rumi: '', correct: false };
     if (typeof opt === 'string') {
@@ -811,118 +544,6 @@ export default function App() {
     setActiveTab('topics');
   };
 
-  const normalizeCompareText = (str) => {
-    if (!str) return '';
-    return str
-      .replace(/\[Set #\d+\]/gi, '')
-      .replace(/[\u064B-\u065F\u0670]/g, '') // remove Arabic harakat for accurate comparison
-      .replace(/[^\w\u0600-\u06FF]/gi, '') // remove whitespace and punctuation
-      .toLowerCase();
-  };
-
-  const analyzeBatchDuplicates = (incomingList) => {
-    const existingMap = new Map();
-    allQuestions.forEach((q) => {
-      if (q.id) existingMap.set(`id:${q.id}`, q);
-      const normJawi = normalizeCompareText(q.questionJawi);
-      if (normJawi) existingMap.set(`jawi:${normJawi}`, q);
-      const normRumi = normalizeCompareText(q.questionRumi || q.transliteration);
-      if (normRumi) existingMap.set(`rumi:${normRumi}`, q);
-    });
-
-    const uniqueNew = [];
-    const duplicates = [];
-    const seenBatchKeys = new Set();
-
-    incomingList.forEach((item, index) => {
-      const normJawi = normalizeCompareText(item.questionJawi);
-      const normRumi = normalizeCompareText(item.questionRumi || item.transliteration);
-      const idKey = item.id ? `id:${item.id}` : null;
-      const jawiKey = normJawi ? `jawi:${normJawi}` : null;
-      const rumiKey = normRumi ? `rumi:${normRumi}` : null;
-
-      // Check against existing bank or items already in this batch
-      const matchedExisting = (idKey && existingMap.get(idKey)) || 
-                              (jawiKey && existingMap.get(jawiKey)) || 
-                              (rumiKey && existingMap.get(rumiKey));
-      
-      const isBatchDuplicate = (jawiKey && seenBatchKeys.has(jawiKey)) || 
-                              (idKey && seenBatchKeys.has(idKey));
-
-      if (matchedExisting || isBatchDuplicate) {
-        duplicates.push({
-          item,
-          reason: matchedExisting ? `Sama dengan soalan sedia ada: "${(matchedExisting.questionRumi || matchedExisting.questionJawi).slice(0, 50)}..."` : 'Bertindih dalam senarai JSON yang sama'
-        });
-      } else {
-        uniqueNew.push(item);
-        if (idKey) seenBatchKeys.add(idKey);
-        if (jawiKey) seenBatchKeys.add(jawiKey);
-      }
-    });
-
-    return { uniqueNew, duplicates };
-  };
-
-  const handleScanDuplicates = () => {
-    if (!bulkJsonText.trim()) {
-      showToast("Sila tampal teks JSON dahulu untuk diimbas!");
-      return;
-    }
-    try {
-      const parsed = JSON.parse(bulkJsonText);
-      if (!Array.isArray(parsed)) throw new Error("JSON mestilah dalam bentuk tatasusunan [ ... ]");
-      const result = analyzeBatchDuplicates(parsed);
-      setScanResult({
-        total: parsed.length,
-        uniqueCount: result.uniqueNew.length,
-        duplicateCount: result.duplicates.length,
-        duplicates: result.duplicates
-      });
-      showToast(`Imbasan selesai: ${result.uniqueNew.length} soalan baharu, ${result.duplicates.length} bertindih dikesan.`);
-    } catch (e) {
-      showToast(`Ralat JSON: ${e.message}`);
-    }
-  };
-
-  const handleBulkImport = async () => {
-    if (!bulkJsonText.trim()) return;
-    try {
-      const parsed = JSON.parse(bulkJsonText);
-      if (!Array.isArray(parsed)) throw new Error("JSON mestilah dalam bentuk tatasusunan [ ... ]");
-
-      const { uniqueNew, duplicates } = analyzeBatchDuplicates(parsed);
-      const itemsToProcess = duplicateFilterMode === 'skip' ? uniqueNew : parsed;
-
-      if (itemsToProcess.length === 0) {
-        showToast("Semua soalan dalam JSON adalah duplikasi dan telah dilangkau!");
-        return;
-      }
-
-      if (db && user) {
-        const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'psra_questions');
-        let count = 0;
-        for (const item of itemsToProcess) {
-          await addDoc(colRef, {
-            ...item,
-            createdAt: new Date().toISOString()
-          });
-          count++;
-        }
-        showToast(`Alhamdulillah, ${count} soalan baharu berjaya dimuat naik! (${duplicates.length} duplikasi ditapis).`);
-        setBulkJsonText('');
-        setScanResult(null);
-      } else {
-        setCloudQuestions((prev) => [...prev, ...itemsToProcess]);
-        showToast(`${itemsToProcess.length} soalan dimuat naik ke sesi aktif! (${duplicates.length} duplikasi dilangkau).`);
-        setBulkJsonText('');
-        setScanResult(null);
-      }
-    } catch (e) {
-      showToast(`Ralat JSON: ${e.message}`);
-    }
-  };
-
   const questionMatrix = useMemo(() => {
     const subjects = ['tajweed', 'imlak', 'arabic', 'tauhid', 'ibadah', 'sirah'];
     const matrix = {};
@@ -941,22 +562,23 @@ export default function App() {
     return matrix;
   }, [allQuestions]);
 
-  const handleCreateProfile = (e) => {
-    e.preventDefault();
-    if (!newProfileName.trim()) return;
-    const newProf = {
-      id: `prof_${Date.now()}`,
-      name: newProfileName.trim(),
-      role: newProfileRole,
-      avatar: newProfileRole === 'parent' ? '🧪' : '⭐',
-      analytics: { ...initialAnalyticsTemplate }
-    };
-    setProfiles(prev => [...prev, newProf]);
-    setActiveProfileId(newProf.id);
-    setNewProfileName('');
-    setShowAddProfileModal(false);
-    setShowProfileMenu(false);
-    showToast(`Profil "${newProf.name}" berjaya didaftarkan!`);
+  const handleBulkImport = () => {
+    if (!bulkJsonText.trim()) {
+      showToast("Sila tampal teks JSON dahulu.");
+      return;
+    }
+    try {
+      let clean = bulkJsonText.trim().replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+      clean = clean.replace(/,\s*([\]}])/g, '$1');
+      if (clean.startsWith('{') && clean.endsWith('}')) clean = `[${clean}]`;
+      const parsed = JSON.parse(clean);
+      if (!Array.isArray(parsed)) throw new Error("Format mestilah tatasusunan [ ... ]");
+      setCustomBank(prev => [...prev, ...parsed]);
+      setBulkJsonText('');
+      showToast(`Alhamdulillah! ${parsed.length} soalan berjaya ditambah.`);
+    } catch {
+      showToast("Ralat format JSON: Sila semak tanda kurung.");
+    }
   };
 
   const subjectThemes = {
@@ -973,8 +595,8 @@ export default function App() {
       
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-800 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2">
-          <IconCheckCircle className="w-4 h-4 text-emerald-300" />
+        <div className="fixed top-5 right-5 z-50 bg-emerald-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 border border-emerald-500">
+          <IconCheckCircle className="w-5 h-5 text-emerald-300 shrink-0" />
           <span>{toastMsg}</span>
         </div>
       )}
@@ -998,7 +620,6 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2 relative">
-            {/* Profile Switcher Trigger */}
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -1008,52 +629,30 @@ export default function App() {
                 <span className="text-[10px] opacity-70">▼</span>
               </button>
 
-              {/* Profile Switcher Dropdown */}
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-emerald-200 py-2 z-50 text-xs">
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
-                    <span>Pilih Profil Aktif</span>
-                    <span className="text-emerald-700 font-bold">{profiles.length} Profil</span>
+                <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-emerald-200 py-2 z-50 text-xs">
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                    Pilih Profil
                   </div>
-                  <div className="max-h-52 overflow-y-auto py-1">
-                    {profiles.map(p => (
-                      <button
-                        key={p.id}
-                        onClick={() => {
-                          setActiveProfileId(p.id);
-                          setShowProfileMenu(false);
-                          showToast(`Kini menggunakan profil: ${p.name}`);
-                        }}
-                        className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-emerald-50 transition-all ${
-                          p.id === activeProfileId ? 'bg-emerald-100/70 font-bold text-emerald-950' : 'text-slate-700'
-                        }`}>
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="text-base">{p.avatar}</span>
-                          <span className="truncate">{p.name}</span>
-                        </div>
-                        {p.id === activeProfileId && (
-                          <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="p-2 border-t border-slate-100">
+                  {profiles.map(p => (
                     <button
+                      key={p.id}
                       onClick={() => {
-                        setShowAddProfileModal(true);
+                        setActiveProfileId(p.id);
                         setShowProfileMenu(false);
+                        showToast(`Profil: ${p.name}`);
                       }}
-                      className="w-full py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold rounded-xl text-[11px] flex items-center justify-center gap-1 transition-all">
-                      <IconUserPlus className="w-3.5 h-3.5" />
-                      <span>+ Tambah Pelajar / Pengguna</span>
+                      className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-emerald-50 ${
+                        p.id === activeProfileId ? 'bg-emerald-100/70 font-bold text-emerald-950' : 'text-slate-700'
+                      }`}>
+                      <span>{p.avatar} {p.name}</span>
+                      {p.id === activeProfileId && <span className="w-2 h-2 rounded-full bg-emerald-600"></span>}
                     </button>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Parent Rumi Toggle */}
             <label className="flex items-center gap-1.5 bg-emerald-100/70 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-900 cursor-pointer border border-emerald-300/80">
               <input 
                 type="checkbox" 
@@ -1064,7 +663,6 @@ export default function App() {
               <span className="text-[11px]">Bantuan Rumi</span>
             </label>
 
-            {/* Exit Test Button if active test */}
             {(examActive || activeTab === 'quiz' || activeTab === 'matching') && (
               <button 
                 onClick={exitToDashboard} 
@@ -1077,60 +675,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Add Profile Modal */}
-      {showAddProfileModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-emerald-200">
-            <h3 className="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
-              <span>👤</span> Tambah Profil Pengguna Baharu
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              Prestasi dan rekod soalan akan diasingkan secara automatik supaya tidak bercampur.
-            </p>
-
-            <form onSubmit={handleCreateProfile} className="space-y-3">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Nama Pengguna / Pelajar:</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="cth: Ahmad Fawwaz / Kakak / Ayah"
-                  value={newProfileName}
-                  onChange={(e) => setNewProfileName(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-emerald-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Peranan:</label>
-                <select
-                  value={newProfileRole}
-                  onChange={(e) => setNewProfileRole(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-emerald-300 rounded-xl font-semibold bg-emerald-50/50">
-                  <option value="student">🎓 Calon Pelajar PSRA</option>
-                  <option value="parent">🧪 Ibu / Bapa (Uji Cuba Sahaja)</option>
-                </select>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddProfileModal(false)}
-                  className="w-1/2 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="w-1/2 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs transition-all">
-                  Simpan & Pilih
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Main App Content Area */}
+      {/* Main Content Area */}
       <main className="max-w-5xl mx-auto px-4 py-5 w-full flex-grow pb-48">
         
         {/* Navigation Tabs */}
@@ -1162,7 +707,7 @@ export default function App() {
           })}
         </nav>
 
-        {/* Global Filters for Learning Modes */}
+        {/* Global Filters */}
         {(activeTab === 'quiz' || activeTab === 'flashcard' || activeTab === 'matching') && (
           <div className="bg-white rounded-2xl p-3 border border-emerald-200 shadow-xs mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -1195,7 +740,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 1: NOTA TOPIK & SUBJEK PSRA */}
+        {}
         {activeTab === 'topics' && (
           <div className="space-y-4">
             <div className="text-center max-w-md mx-auto mb-5">
@@ -1231,6 +776,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'quiz' && (
           <div className="max-w-2xl mx-auto">
             {filteredQuestions.length === 0 ? (
@@ -1270,7 +816,6 @@ export default function App() {
                         </p>
                       )}
 
-                      {/* Options Grid with Full Text Rendering */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                         {(q.options || []).map((rawOpt, idx) => {
                           const opt = normalizeOption(rawOpt);
@@ -1340,7 +885,6 @@ export default function App() {
                         })}
                       </div>
 
-                      {/* Feedback Note */}
                       {quizAnswered && (
                         <div className="mt-5 p-4 rounded-2xl text-xs bg-emerald-50 border border-emerald-200 text-slate-700">
                           <strong className="text-emerald-900 block mb-1">Nota PSRA:</strong>
@@ -1351,7 +895,6 @@ export default function App() {
                   );
                 })()}
 
-                {/* Seterusnya Button */}
                 {quizAnswered && (
                   <button 
                     onClick={() => {
@@ -1360,7 +903,7 @@ export default function App() {
                       if (quizIndex < filteredQuestions.length - 1) {
                         setQuizIndex(i => i + 1);
                       } else {
-                        showToast("Tahniah! Semua soalan set ini telah diselesaikan.");
+                        showToast("🎉 Tahniah! Semua soalan set ini telah diselesaikan.");
                         setQuizIndex(0);
                       }
                     }} 
@@ -1373,6 +916,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'exam' && (
           <div className="max-w-2xl mx-auto">
             {!examActive && !examSubmitted && (
@@ -1432,7 +976,6 @@ export default function App() {
                         </p>
                       )}
 
-                      {/* Fully Protected Choice Rendering */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {(eq.options || []).map((rawOpt, oIdx) => {
                           const opt = normalizeOption(rawOpt);
@@ -1466,7 +1009,6 @@ export default function App() {
                   );
                 })()}
 
-                {/* Exam Navigation Controls */}
                 <div className="flex justify-between items-center">
                   <button 
                     disabled={examIndex === 0} 
@@ -1506,6 +1048,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'flashcard' && (
           <div className="max-w-md mx-auto space-y-4">
             <div className="flex justify-between items-center text-xs font-medium text-slate-500 px-1">
@@ -1558,6 +1101,7 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'matching' && (
           <div className="max-w-xl mx-auto bg-white p-6 rounded-3xl shadow-sm border border-emerald-200">
             <div className="text-center mb-5">
@@ -1620,9 +1164,9 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'analytics' && (
           <div className="max-w-3xl mx-auto space-y-5">
-            {/* Active Profile Info Banner */}
             <div className="bg-white rounded-2xl p-3.5 border border-emerald-200 shadow-xs flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{currentProfile.avatar}</span>
@@ -1638,14 +1182,8 @@ export default function App() {
                   <p className="text-[10px] text-slate-500">Rekod analisis di bawah adalah khusus untuk profil ini sahaja.</p>
                 </div>
               </div>
-              <button
-                onClick={() => setShowProfileMenu(true)}
-                className="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition-all">
-                Tukar Profil
-              </button>
             </div>
 
-            {/* Performance Overview Banner */}
             <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 rounded-3xl p-6 text-white shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -1690,7 +1228,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Subject Mastery Progress Bars */}
             <div className="bg-white rounded-3xl p-6 border border-emerald-200 shadow-sm">
               <h3 className="text-sm font-bold text-emerald-950 mb-4">Penguasaan Mengikut 6 Subjek PSRA</h3>
               <div className="space-y-3">
@@ -1725,13 +1262,14 @@ export default function App() {
           </div>
         )}
 
+        {}
         {activeTab === 'manage' && (
           <div className="max-w-3xl mx-auto space-y-5">
             <div className="bg-white rounded-3xl p-6 border border-emerald-200 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-base font-bold text-emerald-950">Matriks Agihan Bank Soalan</h2>
-                  <p className="text-xs text-slate-500">Taburan soalan aktif mengikut subjek dan kategori latihan.</p>
+                  <h2 className="text-base font-bold text-emerald-950">Matriks Agihan Bank Soalan Real-Time</h2>
+                  <p className="text-xs text-slate-500">Taburan soalan aktif mengikut subjek dan kategori modul latihan.</p>
                 </div>
                 <div className="bg-emerald-100 text-emerald-900 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">
                   {allQuestions.length} Jumlah Soalan
@@ -1768,118 +1306,32 @@ export default function App() {
 
             {/* Bulk JSON Import Box */}
             <div className="bg-white rounded-3xl p-6 border border-emerald-200 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                <div>
-                  <h3 className="text-sm font-bold text-emerald-950 flex items-center gap-1.5">
-                    <IconFolderPlus className="w-4 h-4 text-emerald-700" />
-                    <span>Import Pukal JSON dengan Penapis Duplikasi Pintar</span>
-                  </h3>
-                  <p className="text-xs text-slate-500">Tampal tatasusunan soalan JSON di bawah untuk memuat naik ke pangkalan data awan.</p>
-                </div>
-                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1">
-                  <IconShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Penapis Duplikasi Aktif</span>
-                </span>
-              </div>
-
-              {/* Duplicate Filter Configuration Bar */}
-              <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3 mb-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <IconFilter className="w-4 h-4 text-emerald-800" />
-                  <span className="font-bold text-emerald-950">Tindakan Bila Soalan Bertindih:</span>
-                </div>
-                <div className="flex items-center gap-4 font-semibold text-slate-700">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="dupFilterMode"
-                      value="skip"
-                      checked={duplicateFilterMode === 'skip'}
-                      onChange={() => setDuplicateFilterMode('skip')}
-                      className="accent-emerald-700"
-                    />
-                    <span>Langkau Soalan Bertindih (Disyorkan)</span>
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="dupFilterMode"
-                      value="overwrite"
-                      checked={duplicateFilterMode === 'overwrite'}
-                      onChange={() => setDuplicateFilterMode('overwrite')}
-                      className="accent-emerald-700"
-                    />
-                    <span>Timpa & Kemaskini</span>
-                  </label>
-                </div>
-              </div>
+              <h3 className="text-sm font-bold text-emerald-950 mb-1 flex items-center gap-1.5">
+                <IconFolderPlus className="w-4 h-4 text-emerald-700" />
+                <span>Import Pukal JSON (Simpan Terus & Tapis Pendua)</span>
+              </h3>
+              <p className="text-xs text-slate-500 mb-3">Tampal tatasusunan soalan JSON di bawah untuk memuat naik ke pangkalan data bank soalan.</p>
 
               <textarea 
                 rows={6}
                 value={bulkJsonText}
-                onChange={(e) => {
-                  setBulkJsonText(e.target.value);
-                  setScanResult(null);
-                }}
+                onChange={(e) => setBulkJsonText(e.target.value)}
                 placeholder='Tampal JSON di sini [ { "subject": "tajweed", "type": "mcq", ... } ]'
                 className="w-full p-3 font-mono text-xs bg-emerald-50/30 border border-emerald-200 rounded-2xl mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-600"
               />
 
-              {/* Scan Results Preview Card if available */}
-              {scanResult && (
-                <div className="mb-3 p-4 rounded-2xl bg-amber-50/80 border border-amber-300 text-xs">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-amber-950 flex items-center gap-1.5">
-                      <IconAlertTriangle className="w-4 h-4 text-amber-600" />
-                      <span>Hasil Imbasan Pra-Tonton:</span>
-                    </span>
-                    <span className="text-[11px] font-extrabold text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-full">
-                      {scanResult.total} Soalan Diproses
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-bold mb-2">
-                    <div className="p-2 rounded-xl bg-white/80 border border-amber-200 text-emerald-800">
-                      ✅ {scanResult.uniqueCount} Soalan Baharu (Akan ditambah)
-                    </div>
-                    <div className="p-2 rounded-xl bg-white/80 border border-amber-200 text-rose-800">
-                      ⚠️ {scanResult.duplicateCount} Soalan Bertindih ({duplicateFilterMode === 'skip' ? 'Akan dilangkau' : 'Akan ditimpa'})
-                    </div>
-                  </div>
-                  {scanResult.duplicates.length > 0 && (
-                    <div className="max-h-28 overflow-y-auto pr-1 text-[11px] text-slate-600 space-y-1">
-                      {scanResult.duplicates.map((d, dIdx) => (
-                        <div key={dIdx} className="bg-white/60 p-1.5 rounded-lg border border-amber-100 flex items-center justify-between">
-                          <span className="truncate pr-2 font-medium">{d.item.questionRumi || d.item.questionJawi}</span>
-                          <span className="text-[10px] text-rose-700 shrink-0 font-bold">{d.reason}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2">
-                <button 
-                  onClick={handleScanDuplicates}
-                  type="button"
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5 border border-slate-300">
-                  <IconShieldCheck className="w-4 h-4 text-emerald-700" />
-                  <span>Imbas & Semak Pendua Dahulu</span>
-                </button>
-                <button 
-                  onClick={handleBulkImport}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5">
-                  <IconFolderPlus className="w-4 h-4" />
-                  <span>Muat Naik & Tapis Pendua Sekarang</span>
-                </button>
-              </div>
+              <button 
+                onClick={handleBulkImport}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5">
+                <IconFolderPlus className="w-4 h-4" />
+                <span>Muat Naik & Tapis Pendua Sekarang</span>
+              </button>
             </div>
           </div>
         )}
 
       </main>
 
-      {/* Footer */}
       <footer className="py-4 text-center text-[11px] text-emerald-800/80 font-medium border-t border-emerald-200/50 bg-white/40">
         PSRA Mumtaz • Sukatan JAIS Tahun 5 & 6
       </footer>
